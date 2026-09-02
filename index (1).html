@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nathan Prabaswara — TKJ & Programmer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #090c10;
+    --bg-panel: #0f141b;
+    --line: #1c242f;
+    --green: #4fe3a1;
+    --blue: #6c9bff;
+    --amber: #e3b04f;
+    --text: #dbe4ee;
+    --text-dim: #7c8a9a;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background: var(--bg);
+    color: var(--text);
+    font-family:'JetBrains Mono', monospace;
+    overflow-x:hidden;
+  }
+  h1,h2,h3, .display{
+    font-family:'Space Grotesk', sans-serif;
+  }
+  a{color:inherit;}
+
+  /* ---------- background grid ---------- */
+  .grid-bg{
+    position:fixed; inset:0; z-index:0; pointer-events:none;
+    background-image:
+      linear-gradient(var(--line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--line) 1px, transparent 1px);
+    background-size: 42px 42px;
+    opacity:0.35;
+    mask-image: radial-gradient(circle at 50% 20%, black, transparent 75%);
+  }
+
+  /* ---------- hacker silhouette background ---------- */
+  .hacker-bg{
+    position:absolute;
+    right: clamp(-40px, -2vw, 0px);
+    bottom: -30px;
+    width: min(46vw, 560px);
+    z-index:0;
+    opacity:0.16;
+    pointer-events:none;
+    filter: drop-shadow(0 0 40px rgba(79,227,161,0.15));
+  }
+  @media (max-width:920px){ .hacker-bg{ display:none; } }
+  .hacker-bg svg{ width:100%; height:auto; display:block; }
+  .hacker-bg .glow-line{
+    stroke: var(--green);
+    stroke-width: 1.4;
+    fill:none;
+    stroke-dasharray: 6 5;
+    animation: dash 3.5s linear infinite;
+  }
+  @keyframes dash{ to{ stroke-dashoffset: -100; } }
+
+  /* ---------- nav ---------- */
+  nav{
+    position:fixed; top:0; left:0; right:0; z-index:50;
+    display:flex; justify-content:space-between; align-items:center;
+    padding:20px clamp(20px,5vw,64px);
+    background:rgba(9,12,16,0.75);
+    backdrop-filter: blur(10px);
+    border-bottom:1px solid var(--line);
+  }
+  .logo{
+    font-weight:700; font-size:15px; letter-spacing:0.02em;
+    display:flex; align-items:center; gap:8px;
+  }
+  .logo .dot{width:8px; height:8px; border-radius:50%; background:var(--green); box-shadow:0 0 8px var(--green);}
+  .navlinks{display:flex; gap:32px; font-size:13px; color:var(--text-dim);}
+  .navlinks a{text-decoration:none; transition:color .2s;}
+  .navlinks a:hover{color:var(--green);}
+  @media (max-width:720px){ .navlinks{display:none;} }
+
+  /* ---------- hero ---------- */
+  .hero{
+    position:relative; z-index:1;
+    min-height:100vh;
+    display:grid;
+    grid-template-columns: 1.1fr 1fr;
+    align-items:center;
+    padding:120px clamp(20px,5vw,64px) 60px;
+    gap:24px;
+  }
+  @media (max-width:920px){
+    .hero{grid-template-columns:1fr; min-height:auto; padding-top:110px;}
+  }
+  .eyebrow{
+    color:var(--green); font-size:12.5px; letter-spacing:0.04em;
+    display:flex; align-items:center; gap:10px; margin-bottom:22px;
+  }
+  .eyebrow::before{content:''; width:22px; height:1px; background:var(--green);}
+  .hero h1{
+    font-size:clamp(38px, 5.6vw, 68px);
+    line-height:1.04;
+    font-weight:600;
+    letter-spacing:-0.01em;
+  }
+  .hero h1 .line2{color:var(--text-dim);}
+  .hero p.lead{
+    margin-top:26px; max-width:52ch;
+    font-size:15.5px; line-height:1.7; color:var(--text-dim);
+  }
+  .hero-actions{display:flex; gap:14px; margin-top:38px; flex-wrap:wrap;}
+  .btn{
+    font-family:'JetBrains Mono', monospace;
+    font-size:13.5px;
+    padding:13px 22px;
+    border-radius:3px;
+    border:1px solid var(--line);
+    background:transparent;
+    color:var(--text);
+    cursor:pointer;
+    text-decoration:none;
+    display:inline-flex; align-items:center; gap:8px;
+    transition: border-color .2s, background .2s, transform .15s;
+  }
+  .btn:hover{ transform:translateY(-1px); }
+  .btn.primary{
+    background:var(--green); color:#06110c; border-color:var(--green); font-weight:700;
+  }
+  .btn.primary:hover{ background:#68f0b3; }
+  .btn.ghost:hover{ border-color:var(--blue); color:var(--blue); }
+
+  .scene-wrap{
+    position:relative;
+    height:520px;
+    border:1px solid var(--line);
+    border-radius:6px;
+    background: radial-gradient(circle at 50% 40%, #0d141c, #090c10 75%);
+    overflow:hidden;
+  }
+  @media (max-width:920px){ .scene-wrap{height:380px; order:-1;} }
+  .scene-wrap canvas{display:block; cursor:grab;}
+  .scene-wrap canvas:active{cursor:grabbing;}
+  .scene-label{
+    position:absolute; bottom:14px; left:14px;
+    font-size:11px; color:var(--text-dim);
+    display:flex; align-items:center; gap:8px;
+  }
+  .scene-label .pulse{
+    width:6px; height:6px; border-radius:50%; background:var(--blue);
+    animation:pulse 1.6s infinite;
+  }
+  @keyframes pulse{ 0%,100%{opacity:1;} 50%{opacity:.25;} }
+  .scene-hint{
+    position:absolute; top:14px; right:14px; font-size:10.5px; color:var(--text-dim);
+    border:1px solid var(--line); padding:5px 10px; border-radius:3px;
+  }
+
+  /* ---------- section shared ---------- */
+  section{ position:relative; z-index:1; padding:100px clamp(20px,5vw,64px); }
+  .section-head{ margin-bottom:52px; max-width:640px; }
+  .section-num{ font-size:12px; color:var(--green); margin-bottom:14px; }
+  .section-head h2{ font-size:clamp(26px,3.4vw,38px); font-weight:600; }
+  .section-head p{ margin-top:14px; color:var(--text-dim); font-size:14.5px; line-height:1.7; }
+
+  /* ---------- skills / stack ---------- */
+  .track-grid{
+    display:grid; grid-template-columns:1fr 1fr; gap:1px;
+    background:var(--line); border:1px solid var(--line); border-radius:6px; overflow:hidden;
+  }
+  @media (max-width:760px){ .track-grid{grid-template-columns:1fr;} }
+  .track{
+    background:var(--bg-panel); padding:36px 32px;
+  }
+  .track h3{
+    font-size:19px; font-weight:600; display:flex; align-items:center; gap:10px; margin-bottom:8px;
+  }
+  .track h3 .tag{
+    font-size:10.5px; font-family:'JetBrains Mono'; color:#06110c;
+    background:var(--green); padding:3px 8px; border-radius:3px; font-weight:700;
+  }
+  .track.dev h3 .tag{ background:var(--blue); }
+  .track p.desc{ color:var(--text-dim); font-size:13.5px; margin-bottom:22px; line-height:1.6;}
+  .chips{display:flex; flex-wrap:wrap; gap:8px;}
+  .chip{
+    font-size:12px; padding:7px 12px; border:1px solid var(--line); border-radius:3px;
+    color:var(--text-dim); transition:.2s;
+  }
+  .track:hover .chip{ }
+  .chip:hover{ border-color:var(--green); color:var(--green); }
+  .track.dev .chip:hover{ border-color:var(--blue); color:var(--blue); }
+
+  /* ---------- interactive terminal ---------- */
+  .terminal{
+    background:#050708; border:1px solid var(--line); border-radius:6px;
+    max-width:760px; overflow:hidden;
+  }
+  .term-bar{
+    display:flex; align-items:center; gap:8px; padding:10px 14px;
+    background:#0d1117; border-bottom:1px solid var(--line);
+  }
+  .term-bar span{ width:10px; height:10px; border-radius:50%; }
+  .term-bar span:nth-child(1){ background:#ff5f57; }
+  .term-bar span:nth-child(2){ background:#febc2e; }
+  .term-bar span:nth-child(3){ background:#28c840; }
+  .term-title{ margin-left:8px; font-size:11.5px; color:var(--text-dim); }
+  .term-body{ padding:20px; font-size:13px; line-height:1.9; min-height:220px; }
+  .term-body .prompt{ color:var(--green); }
+  .term-body .cmd{ color:var(--text); }
+  .term-out{ color:var(--text-dim); white-space:pre-wrap; }
+  .term-input-row{ display:flex; gap:8px; align-items:center; margin-top:6px; }
+  #termInput{
+    background:transparent; border:none; outline:none; color:var(--text);
+    font-family:'JetBrains Mono', monospace; font-size:13px; flex:1;
+  }
+  .caret{ display:inline-block; width:7px; height:15px; background:var(--green); animation:blink 1s step-end infinite; vertical-align:middle;}
+  @keyframes blink{ 50%{opacity:0;} }
+  .term-hint{ font-size:11.5px; color:var(--text-dim); margin-top:14px; }
+  .term-hint code{ color:var(--amber); }
+
+  /* ---------- projects ---------- */
+  .projects{ display:grid; grid-template-columns:repeat(3,1fr); gap:1px; background:var(--line); border:1px solid var(--line); border-radius:6px; overflow:hidden;}
+  @media (max-width:920px){ .projects{grid-template-columns:1fr;} }
+  .project{ background:var(--bg-panel); padding:30px 26px; position:relative;}
+  .project .idx{ font-size:12px; color:var(--text-dim); margin-bottom:20px; }
+  .project h4{ font-size:17px; font-weight:600; margin-bottom:10px; }
+  .project p{ font-size:13px; color:var(--text-dim); line-height:1.65; margin-bottom:18px; }
+  .project .stacks{ display:flex; gap:6px; flex-wrap:wrap; }
+  .project .stacks span{ font-size:10.5px; color:var(--text-dim); border:1px solid var(--line); padding:3px 8px; border-radius:3px;}
+
+  /* ---------- contact ---------- */
+  .contact-panel{
+    border:1px solid var(--line); border-radius:6px; background:var(--bg-panel);
+    padding:48px clamp(20px,4vw,56px);
+    display:grid; grid-template-columns:1.1fr 1fr; gap:40px;
+  }
+  @media (max-width:820px){ .contact-panel{grid-template-columns:1fr;} }
+  .contact-panel h2{ font-size:clamp(24px,3vw,32px); font-weight:600; margin-bottom:16px;}
+  .contact-panel p{ color:var(--text-dim); font-size:14px; line-height:1.7; max-width:44ch;}
+  .contact-list{ display:flex; flex-direction:column; gap:0; }
+  .contact-item{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:18px 0; border-bottom:1px solid var(--line);
+    text-decoration:none; color:var(--text);
+    transition:padding-left .2s;
+  }
+  .contact-item:first-child{ border-top:1px solid var(--line); }
+  .contact-item:hover{ padding-left:8px; color:var(--green); }
+  .contact-item .label{ font-size:11px; color:var(--text-dim); text-transform:uppercase; letter-spacing:.06em; }
+  .contact-item .value{ font-size:14.5px; margin-top:4px; }
+  .contact-item .arrow{ font-size:16px; color:var(--text-dim); }
+  .contact-item:hover .arrow{ color:var(--green); }
+
+  footer{
+    position:relative; z-index:1;
+    padding:30px clamp(20px,5vw,64px);
+    border-top:1px solid var(--line);
+    display:flex; justify-content:space-between; align-items:center;
+    font-size:12px; color:var(--text-dim); flex-wrap:wrap; gap:10px;
+  }
+</style>
+</head>
+<body>
+
+<div class="grid-bg"></div>
+
+<nav>
+  <div class="logo"><span class="dot"></span> nathan.prabaswara</div>
+  <div class="navlinks">
+    <a href="#keahlian">Keahlian</a>
+    <a href="#terminal">Terminal</a>
+    <a href="#proyek">Proyek</a>
+    <a href="#kontak">Kontak</a>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="hacker-bg" aria-hidden="true">
+    <svg viewBox="0 0 400 480" xmlns="http://www.w3.org/2000/svg">
+      <!-- monitor glow -->
+      <rect x="60" y="300" width="180" height="120" rx="4" fill="none" stroke="#2a3644" stroke-width="1.4"/>
+      <rect x="72" y="312" width="156" height="90" fill="#4fe3a1" opacity="0.06"/>
+      <line class="glow-line" x1="80" y1="325" x2="180" y2="325"/>
+      <line class="glow-line" x1="80" y1="340" x2="205" y2="340"/>
+      <line class="glow-line" x1="80" y1="355" x2="150" y2="355"/>
+      <line class="glow-line" x1="80" y1="370" x2="190" y2="370"/>
+
+      <!-- hooded figure silhouette, seated at desk -->
+      <path d="M150 60
+               C 150 20, 250 20, 250 60
+               L 258 150
+               C 258 170, 245 185, 225 190
+               L 260 260
+               C 275 300, 275 340, 260 380
+               L 300 460
+               L 100 460
+               L 140 380
+               C 125 340, 125 300, 140 260
+               L 175 190
+               C 155 185, 142 170, 142 150
+               Z"
+            fill="#0d1420" stroke="#2a3644" stroke-width="1.5"/>
+
+      <!-- hood peak -->
+      <path d="M150 60 C 150 20, 250 20, 250 60 C 250 40, 235 25, 200 25 C 165 25, 150 40, 150 60 Z"
+            fill="#0a0f18" stroke="#2a3644" stroke-width="1.5"/>
+
+      <!-- face shadow -->
+      <ellipse cx="200" cy="110" rx="34" ry="42" fill="#050708"/>
+
+      <!-- screen reflection in hood -->
+      <ellipse cx="200" cy="118" rx="14" ry="10" fill="#4fe3a1" opacity="0.18"/>
+
+      <!-- arms toward keyboard -->
+      <path d="M175 190 L 130 300 L 165 320 L 200 240 Z" fill="#0d1420" stroke="#2a3644" stroke-width="1.2"/>
+      <path d="M225 190 L 270 300 L 235 320 L 200 240 Z" fill="#0d1420" stroke="#2a3644" stroke-width="1.2"/>
+
+      <!-- keyboard -->
+      <rect x="150" y="315" width="100" height="14" rx="2" fill="#0a0f18" stroke="#2a3644" stroke-width="1.2"/>
+    </svg>
+  </div>
+  <div>
+    <div class="eyebrow">SISWA TKJ · PROGRAMMER</div>
+    <h1>Membangun jaringan,<br><span class="line2">menulis kode.</span></h1>
+    <p class="lead">
+      Nathan Prabaswara — bergerak di dua sisi teknologi: merancang & mengelola infrastruktur jaringan (TKJ),
+      sekaligus membangun aplikasi dan sistem lewat kode. Node di sebelah kanan mewakili keduanya — tarik untuk memutar.
+    </p>
+    <div class="hero-actions">
+      <a class="btn primary" href="#kontak">Hubungi Saya →</a>
+      <a class="btn ghost" href="#proyek">Lihat Proyek</a>
+    </div>
+  </div>
+
+  <div class="scene-wrap" id="sceneWrap">
+    <span class="scene-hint">drag untuk rotasi</span>
+    <span class="scene-label"><span class="pulse"></span> topologi_jaringan.live</span>
+  </div>
+</section>
+
+<section id="keahlian">
+  <div class="section-head">
+    <div class="section-num">01 — KEAHLIAN</div>
+    <h2>Dua jalur, satu fondasi logika</h2>
+    <p>Jaringan mengajarkan cara sistem saling terhubung. Kode mengajarkan cara sistem berpikir. Berikut area yang saya kuasai di masing-masing jalur.</p>
+  </div>
+
+  <div class="track-grid">
+    <div class="track net">
+      <h3>Jaringan <span class="tag">TKJ</span></h3>
+      <p class="desc">Instalasi, konfigurasi, dan troubleshooting infrastruktur jaringan skala kecil-menengah.</p>
+      <div class="chips">
+        <span class="chip">Mikrotik RouterOS</span>
+        <span class="chip">Subnetting & VLSM</span>
+        <span class="chip">Cisco Packet Tracer</span>
+        <span class="chip">VLAN & Trunking</span>
+        <span class="chip">Wireless Access Point</span>
+        <span class="chip">Kabel UTP & Fiber</span>
+        <span class="chip">Server Linux Dasar</span>
+        <span class="chip">Troubleshooting LAN/WAN</span>
+      </div>
+    </div>
+    <div class="track dev">
+      <h3>Pemrograman <span class="tag">DEV</span></h3>
+      <p class="desc">Membangun aplikasi web dan tools kecil dari sisi front-end hingga logika back-end.</p>
+      <div class="chips">
+        <span class="chip">HTML / CSS / JS</span>
+        <span class="chip">Python</span>
+        <span class="chip">PHP & MySQL</span>
+        <span class="chip">Git & GitHub</span>
+        <span class="chip">REST API</span>
+        <span class="chip">Struktur Data</span>
+        <span class="chip">Linux CLI</span>
+        <span class="chip">Debugging Sistem</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="terminal">
+  <div class="section-head">
+    <div class="section-num">02 — INTERAKTIF</div>
+    <h2>Coba terminal ini</h2>
+    <p>Simulasi kecil command line. Ketik salah satu perintah di bawah untuk melihat responnya.</p>
+  </div>
+
+  <div class="terminal">
+    <div class="term-bar">
+      <span></span><span></span><span></span>
+      <span class="term-title">nathan@tkj-dev: ~</span>
+    </div>
+    <div class="term-body" id="termBody">
+      <div>Ketik <span style="color:var(--amber)">help</span> untuk daftar perintah.</div>
+      <div id="termLog"></div>
+      <div class="term-input-row">
+        <span class="prompt">nathan@tkj-dev:~$</span>
+        <input id="termInput" type="text" autocomplete="off" spellcheck="false" placeholder="ketik perintah…">
+        <span class="caret"></span>
+      </div>
+    </div>
+  </div>
+  <p class="term-hint">Coba: <code>help</code>, <code>whoami</code>, <code>skills</code>, <code>ping nathan</code>, <code>contact</code>, <code>ifconfig</code></p>
+</section>
+
+<section id="proyek">
+  <div class="section-head">
+    <div class="section-num">03 — PROYEK</div>
+    <h2>Hal yang sudah dikerjakan</h2>
+    <p>Kombinasi praktik jaringan dan proyek pemrograman.</p>
+  </div>
+
+  <div class="projects">
+    <div class="project">
+      <div class="idx">P.01</div>
+      <h4>Rancangan Jaringan Sekolah</h4>
+      <p>Desain topologi LAN untuk laboratorium komputer lengkap dengan pembagian VLAN dan konfigurasi Mikrotik.</p>
+      <div class="stacks"><span>Mikrotik</span><span>VLAN</span><span>Packet Tracer</span></div>
+    </div>
+    <div class="project">
+      <div class="idx">P.02</div>
+      <h4>Web Portofolio Interaktif</h4>
+      <p>Situs pribadi dengan elemen 3D dan terminal simulasi, dibangun dari nol dengan JavaScript murni.</p>
+      <div class="stacks"><span>Three.js</span><span>JavaScript</span><span>CSS</span></div>
+    </div>
+    <div class="project">
+      <div class="idx">P.03</div>
+      <h4>Sistem Sederhana Berbasis PHP</h4>
+      <p>Aplikasi pencatatan data dengan koneksi database MySQL dan validasi input dasar.</p>
+      <div class="stacks"><span>PHP</span><span>MySQL</span><span>Bootstrap</span></div>
+    </div>
+  </div>
+</section>
+
+<section id="kontak">
+  <div class="contact-panel">
+    <div>
+      <h2>Mari terhubung.</h2>
+      <p>Terbuka untuk diskusi seputar jaringan, kolaborasi proyek, atau sekadar bertukar pikiran soal teknologi.</p>
+    </div>
+    <div class="contact-list">
+      <a class="contact-item" href="https://wa.me/6281232253524" target="_blank" rel="noopener">
+        <div>
+          <div class="label">WhatsApp</div>
+          <div class="value">0812-3225-3524</div>
+        </div>
+        <span class="arrow">↗</span>
+      </a>
+      <a class="contact-item" href="mailto:nathanprabaswara60@gmail.com">
+        <div>
+          <div class="label">Email</div>
+          <div class="value">nathanprabaswara60@gmail.com</div>
+        </div>
+        <span class="arrow">↗</span>
+      </a>
+      <a class="contact-item" href="https://instagram.com/nathhpp_7" target="_blank" rel="noopener">
+        <div>
+          <div class="label">Instagram</div>
+          <div class="value">@nathhpp_7</div>
+        </div>
+        <span class="arrow">↗</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <span>© 2026 Nathan Prabaswara</span>
+  <span>TKJ × Programmer</span>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+/* ============ 3D NETWORK / CIRCUIT SCENE ============ */
+(function(){
+  const wrap = document.getElementById('sceneWrap');
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(50, wrap.clientWidth/wrap.clientHeight, 0.1, 100);
+  camera.position.set(0,0,9);
+
+  const renderer = new THREE.WebGLRenderer({antialias:true, alpha:true});
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
+  renderer.setSize(wrap.clientWidth, wrap.clientHeight);
+  wrap.appendChild(renderer.domElement);
+
+  const group = new THREE.Group();
+  scene.add(group);
+
+  // node colors: green (network), blue (code), amber (accent)
+  const colors = [0x4fe3a1, 0x6c9bff, 0xe3b04f];
+
+  // Build node positions: one central "router/server" node, surrounded by device/code nodes
+  const nodeCount = 14;
+  const nodes = [];
+  const nodeGeo = new THREE.IcosahedronGeometry(0.18, 0);
+  const centralGeo = new THREE.IcosahedronGeometry(0.32, 1);
+
+  // central node
+  const centralMat = new THREE.MeshBasicMaterial({color:0x4fe3a1, wireframe:true});
+  const central = new THREE.Mesh(centralGeo, centralMat);
+  group.add(central);
+  nodes.push({mesh: central, pos: new THREE.Vector3(0,0,0)});
+
+  for(let i=0;i<nodeCount;i++){
+    const phi = Math.acos(-1 + (2*i)/nodeCount);
+    const theta = Math.sqrt(nodeCount*Math.PI)*phi;
+    const r = 3.1 + (Math.random()*0.6-0.3);
+    const x = r*Math.cos(theta)*Math.sin(phi);
+    const y = r*Math.sin(theta)*Math.sin(phi);
+    const z = r*Math.cos(phi);
+    const color = colors[i % colors.length];
+    const mat = new THREE.MeshBasicMaterial({color, wireframe:true});
+    const mesh = new THREE.Mesh(nodeGeo, mat);
+    mesh.position.set(x,y,z);
+    group.add(mesh);
+    nodes.push({mesh, pos:new THREE.Vector3(x,y,z)});
+  }
+
+  // connections: central to each, plus a few cross-links
+  const lineMat = new THREE.LineBasicMaterial({color:0x2a3644, transparent:true, opacity:0.7});
+  function addLine(a,b, mat){
+    const geo = new THREE.BufferGeometry().setFromPoints([a,b]);
+    const line = new THREE.Line(geo, mat || lineMat);
+    group.add(line);
+    return line;
+  }
+  for(let i=1;i<nodes.length;i++){
+    addLine(nodes[0].pos, nodes[i].pos);
+  }
+  // some cross links for a "network" feel
+  const crossMat = new THREE.LineBasicMaterial({color:0x3a4a5a, transparent:true, opacity:0.4});
+  for(let i=1;i<nodes.length;i++){
+    const j = 1 + ((i + 4) % (nodes.length-1));
+    if(i!==j) addLine(nodes[i].pos, nodes[j].pos, crossMat);
+  }
+
+  // pulsing packet particles traveling along central lines
+  const packets = [];
+  const packetGeo = new THREE.SphereGeometry(0.045, 8, 8);
+  for(let i=1;i<nodes.length;i+=2){
+    const mat = new THREE.MeshBasicMaterial({color:0xffffff});
+    const p = new THREE.Mesh(packetGeo, mat);
+    group.add(p);
+    packets.push({mesh:p, target:i, t: Math.random()});
+  }
+
+  // lighting not needed (basic materials), ambient for feel
+  scene.add(new THREE.AmbientLight(0xffffff, 0.4));
+
+  // interaction: drag to rotate
+  let isDragging = false, prevX=0, prevY=0;
+  let rotX = 0.15, rotY = 0.3;
+  let velX = 0, velY = 0.0015;
+
+  function onDown(x,y){ isDragging = true; prevX=x; prevY=y; }
+  function onMove(x,y){
+    if(!isDragging) return;
+    const dx = x - prevX, dy = y - prevY;
+    rotY += dx*0.005;
+    rotX += dy*0.005;
+    velX = dy*0.0006;
+    velY = dx*0.0006;
+    prevX = x; prevY = y;
+  }
+  function onUp(){ isDragging = false; }
+
+  renderer.domElement.addEventListener('mousedown', e=>onDown(e.clientX,e.clientY));
+  window.addEventListener('mousemove', e=>onMove(e.clientX,e.clientY));
+  window.addEventListener('mouseup', onUp);
+  renderer.domElement.addEventListener('touchstart', e=>{ const t=e.touches[0]; onDown(t.clientX,t.clientY); }, {passive:true});
+  renderer.domElement.addEventListener('touchmove', e=>{ const t=e.touches[0]; onMove(t.clientX,t.clientY); }, {passive:true});
+  renderer.domElement.addEventListener('touchend', onUp);
+
+  function animate(){
+    requestAnimationFrame(animate);
+
+    if(!isDragging){
+      rotX += velX;
+      rotY += velY;
+      velX *= 0.98;
+      velY += (0.0015 - velY) * 0.01; // settle to gentle auto-rotate
+    }
+
+    group.rotation.x = rotX;
+    group.rotation.y = rotY;
+
+    central.rotation.y += 0.01;
+    central.rotation.x += 0.006;
+
+    // animate packets traveling from center to target node and back
+    const now = performance.now()*0.001;
+    packets.forEach((p,idx)=>{
+      p.t += 0.006 + idx*0.0004;
+      if(p.t>1) p.t = 0;
+      const target = nodes[p.target].pos;
+      const pos = new THREE.Vector3().lerpVectors(new THREE.Vector3(0,0,0), target, p.t);
+      p.mesh.position.copy(pos);
+    });
+
+    renderer.render(scene, camera);
+  }
+  animate();
+
+  window.addEventListener('resize', ()=>{
+    camera.aspect = wrap.clientWidth/wrap.clientHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(wrap.clientWidth, wrap.clientHeight);
+  });
+})();
+
+/* ============ TERMINAL SIMULATION ============ */
+(function(){
+  const input = document.getElementById('termInput');
+  const log = document.getElementById('termLog');
+
+  const commands = {
+    help: `Perintah tersedia:
+  whoami        - tentang saya
+  skills        - daftar keahlian
+  ping nathan   - tes koneksi :)
+  ifconfig      - info jaringan (simulasi)
+  contact       - info kontak
+  clear         - bersihkan layar`,
+    whoami: `nathan_prabaswara
+Peran   : Siswa TKJ & Programmer
+Fokus   : Jaringan komputer, pengembangan web
+Status  : Terbuka untuk kolaborasi & proyek`,
+    skills: `[NETWORK]     Mikrotik, VLAN, Subnetting, Wireless AP
+[PROGRAMMING] HTML/CSS/JS, Python, PHP, MySQL, Git`,
+    'ping nathan': `PING nathan (kontak-aktif): 3 paket dikirim
+64 bytes dari nathan: waktu=12ms status=online
+64 bytes dari nathan: waktu=9ms  status=online
+64 bytes dari nathan: waktu=11ms status=online
+--- statistik ---
+3 paket terkirim, 3 diterima, 0% loss`,
+    ifconfig: `eth0: flags=UP,BROADCAST,RUNNING
+      koneksi : aktif
+      peran   : jembatan antara jaringan & kode
+      catatan : hubungi via WhatsApp/Email untuk detail`,
+    contact: `WhatsApp  : 0812-3225-3524
+Email     : nathanprabaswara60@gmail.com
+Instagram : @nathhpp_7`,
+  };
+
+  function printLine(text, isCmd){
+    const div = document.createElement('div');
+    if(isCmd){
+      div.innerHTML = `<span class="prompt">nathan@tkj-dev:~$</span> <span class="cmd">${text}</span>`;
+    } else {
+      div.className = 'term-out';
+      div.textContent = text;
+    }
+    log.appendChild(div);
+  }
+
+  input.addEventListener('keydown', (e)=>{
+    if(e.key === 'Enter'){
+      const val = input.value.trim();
+      if(!val) return;
+      printLine(val, true);
+
+      if(val === 'clear'){
+        log.innerHTML = '';
+      } else if(commands[val]){
+        printLine(commands[val], false);
+      } else {
+        printLine(`perintah tidak dikenal: "${val}". Ketik "help".`, false);
+      }
+      input.value = '';
+      log.scrollIntoView({block:'end', behavior:'smooth'});
+    }
+  });
+})();
+</script>
+</body>
+</html>
